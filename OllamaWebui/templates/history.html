@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="version" content="{{ version }}">
+    <title>历史对话</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>历史对话记录</h1>
+        <p>当前版本：{{ version }}</p>
+        <ul>
+            {% for conversation_id in conversations %}
+                <li>
+                    <a href="{{ url_for('view_conversation', conversation_id=conversation_id) }}">
+                        会话 ID: {{ conversation_id }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('index') }}" class="btn">返回首页</a>
+    </div>
+</body>
+</html>

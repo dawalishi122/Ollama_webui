@@ -1,0 +1,205 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+h1 {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.container {
+    width: calc(100% - 15%);  /* 容器宽度减去左侧栏宽度 */
+    height: 98%;  /* 使容器的高度为100%视口高度 */
+    position: fixed;  /* 固定容器在浏览器窗口 */
+    top: 0;  /* 与浏览器顶部对齐 */
+    right: 0;   /* 与浏览器右侧对齐 */
+    margin-left: 15%;  /* 与左侧栏对齐 */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar {
+    width: 200px;
+    margin-right: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    text-align: center;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sidebar button:hover {
+    background-color: #45a049;
+}
+
+.chat-box {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.chat-message {
+    display: flex;
+    margin-bottom: 10px;
+    flex-direction: column; /* 使每个消息在一行 */
+}
+
+.user-message {
+    background-color: #cfe2f3;
+    border-radius: 12px;
+    padding: 10px;
+    max-width: 60%;
+    margin-left: auto;  /* 用户消息在右侧 */
+    word-wrap: break-word;
+    text-align: left;  /* 确保文本左对齐 */
+}
+
+.bot-message {
+    background-color: #d4edda;
+    border-radius: 12px;
+    padding: 10px;
+    max-width: 60%;
+    margin-right: auto;  /* 机器人消息在左侧 */
+    word-wrap: break-word;
+    text-align: left;  /* 确保文本左对齐 */
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* 返回首页按钮样式 */
+.back-to-home {
+    position: absolute;
+    top: 5%;  /* 距离底部30px */
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-to-home:hover {
+    background-color: #0056b3;
+}
+
+
+input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Code Block Styling */
+.code-block-container {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    position: relative;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.code-lang {
+    font-size: 16px;
+}
+
+.copy-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.copy-button:hover {
+    background-color: #0056b3;
+}
+
+pre {
+    margin: 10px 0;
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

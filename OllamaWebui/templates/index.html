@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="version" content="{{ version }}">
+    <title>Ollama Web UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <script>
+        function askQuestion() {
+            var question = document.getElementById("question").value;
+            var chatBox = document.getElementById("chatBox");
+
+            // 创建用户消息气泡
+            var userMessage = document.createElement("div");
+            userMessage.className = "chat-message";
+            userMessage.innerHTML = `<div class="user-message">${question}</div>`;
+            chatBox.appendChild(userMessage);
+
+            // 创建机器人消息气泡
+            var botMessage = document.createElement("div");
+            botMessage.className = "chat-message";
+            var botResponseId = "botResponse-" + new Date().getTime();
+            botMessage.innerHTML = `<div class="bot-message" id="${botResponseId}">正在生成回答...</div>`;
+            chatBox.appendChild(botMessage);
+
+            // 滚动到底部
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 发送问题请求到后端
+            var formData = new FormData();
+            formData.append("question", question);
+
+            fetch("/ask", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let content = "";
+                const stream = new ReadableStream({
+                    start(controller) {
+                        function push() {
+                            reader.read().then(({ done, value }) => {
+                                if (done) {
+                                    controller.close();
+                                    return;
+                                }
+                                content += decoder.decode(value, { stream: true });
+
+                                // 检查是否包含代码块并格式化
+                                const formattedContent = formatCodeBlocks(content);
+
+                                // 实时更新正在生成回答...框的内容
+                                document.getElementById(botResponseId).innerHTML = formattedContent;
+
+                                // 继续读取流
+                                push();
+                            });
+                        }
+                        push();
+                    }
+                });
+                return new Response(stream);
+            })
+            .catch(error => {
+                document.getElementById(botResponseId).innerHTML = "发生错误！";
+                console.error(error);
+            });
+
+            // 清空输入框
+            document.getElementById("question").value = "";
+        }
+
+        // 检查流式输出是否包含代码块并格式化
+        function formatCodeBlocks(content) {
+            // 处理 ### 转换为换行符并移除 ###
+            content = content.replace(/###/g, "<br>");
+
+            // 正则表达式匹配代码块
+            const codeBlockPattern = /```([a-zA-Z]*)\n([\s\S]*?)```/g;  
+            let formattedContent = content;
+
+            // 替换代码块
+            formattedContent = formattedContent.replace(codeBlockPattern, (match, lang, code) => {
+                return `
+                    <div class="code-block-container">
+                        <div class="code-header">
+                            <span class="code-lang">${lang.trim()}</span>
+                            <button class="copy-button" onclick="copyCode('{match.group(2).replace('\'', '\\\'')}')">复制代码</button>
+                        </div>
+                        <pre><code>${code.trim()}</code></pre>
+                    </div>
+                `;
+            });
+
+            return formattedContent;
+        }
+
+        function copyCode(code) {
+            // 创建一个临时的 textarea 元素来选择并复制代码
+            const textarea = document.createElement("textarea");
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                // 尝试使用 Clipboard API 来复制内容
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(code)
+                        .then(function() {
+                            // 提示用户复制成功
+                            alert("代码已复制！");
+                        })
+                        .catch(function(error) {
+                            // 处理错误
+                            alert("复制失败，请手动复制！");
+                            console.error("复制失败:", error);
+                        });
+                } else {
+                    // 如果 Clipboard API 不可用，使用旧的 document.execCommand 方法
+                    document.execCommand('copy');
+                    alert("代码已复制！（使用 document.execCommand）");
+                }
+            } catch (err) {
+                // 捕获复制错误
+                alert("复制失败，请手动复制！");
+                console.error("复制失败:", err);
+            } finally {
+                // 删除临时的 textarea 元素
+                document.body.removeChild(textarea);
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>对话历史</h2>
+        <button onclick="window.location.href='/create_new_conversation'">创建新对话</button>
+        <button onclick="window.location.href='/history'">查看历史对话</button>
+        <!-- 显示历史对话记录 -->
+        <ul>
+            {% for conversation in conversations %}
+            <li><a href="{{ url_for('conversation', conversation_id=conversation['id']) }}">{{ conversation['id'] }}</a></li>
+            {% endfor %}
+        </ul>
+  
+    </div>
+    <div class="container">
+        <h1>Ollama Web UI</h1>
+        <p>当前版本：{{ version }}</p>
+        <div class="chat-box" id="chatBox">
+            <!-- 聊天记录将在这里显示 -->
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="question" placeholder="请输入问题">
+            <button onclick="askQuestion()">提交</button>
+        </div>
+        
+    </div>
+</body>
+
+</html>
